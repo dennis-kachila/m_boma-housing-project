@@ -111,4 +111,47 @@ void f_register_to_database(string a,string b,string c,int d)
  }
 
 }
+void f_display_town()
+{
+
+    int qstate;
+
+    MYSQL* conn;
+    MYSQL_ROW row;
+    MYSQL_RES* res;
+    conn = mysql_init(0);
+
+    conn = mysql_real_connect(conn, "localhost", "root", "Dennis001", "m_boma_project", 3306, NULL, 0);
+
+    if (conn)
+    {
+       
+        string query = " SELECT monthly_rent FROM rental_cost WHERE town_id = 100 AND house_cartegory = 'Bungalow'";
+        const char* q = query.c_str();
+        qstate = mysql_query(conn, q);
+        if (!qstate)
+        {
+            printf("town_id   Town_name\n");
+            res = mysql_store_result(conn);
+
+             while (row = mysql_fetch_row(res))
+             {
+                 cout << row[0];
+                 // printf("%s    \n", row[0]);
+            }
+        }
+        else
+        {
+            cout << "Querry failed: " << mysql_error(conn) << endl;
+        }
+    }
+
+    else
+    {
+        puts("connection to database has failed!*");
+    }
+
+}
+
+
 
