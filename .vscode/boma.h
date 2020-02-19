@@ -1,7 +1,6 @@
 #pragma once
 
 
-<<<<<<< Updated upstream
 // declaring the type of data structures
 struct user_registration {
     /* data */
@@ -18,24 +17,7 @@ state current = ACCOUNT_CREATION;
 
 void f_register_to_database(string a,string b,string c,int d);
 
-class boma
-{
-private:
-    /* data */
-public:
-    boma(/* args */);
-    ~boma();
-};
 
-boma::boma(/* args */)
-{
-}
 
-boma::~boma()
-{
-}
-=======
-
->>>>>>> Stashed changes
 
 

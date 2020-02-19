@@ -74,6 +74,7 @@ this icludes the entered name,email,hpone _number etc
 
                 case PASSWORD_VERIFICATION:
                 pin_verification(pass,password);
+                state= TOWN_DISPLAY;
                 break;
 
                 case TOWN_DISPLAY:
