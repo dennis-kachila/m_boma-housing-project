@@ -1,6 +1,7 @@
 #pragma once
 
 
+<<<<<<< Updated upstream
 // declaring the type of data structures
 struct user_registration {
     /* data */
@@ -33,5 +34,8 @@ boma::boma(/* args */)
 boma::~boma()
 {
 }
+=======
+
+>>>>>>> Stashed changes
 
 

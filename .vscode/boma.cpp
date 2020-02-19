@@ -1,8 +1,12 @@
 #include "boma.h"
+<<<<<<< Updated upstream
 #include<mysql.h>
 #include <iostream>
 #include<stdlib.h>
 #include<conio.h>
+=======
+
+>>>>>>> Stashed changes
 #include<string>
 #include<iostream>
 
@@ -19,13 +23,20 @@ struct user_registration {
 
 };
 
+<<<<<<< Updated upstream
 void disp_user_info( user_registration person) {
      cout<<"ACCOUNT CREATION SUCCESSFUL"<<endl
     cout << "ACCOUNT INFO:" << endl;
+=======
+void get_user_info( user_registration person) {
+
+    cout << "ACCOUNT RECORD:" << endl;
+>>>>>>> Stashed changes
     cout << "Name: " << person.first_name <<""<<person.second_name<< endl;
     cout << "Email: " << person.email << endl;
     cout << "Phone_number: " << person.phone_number;
 }
+<<<<<<< Updated upstream
 
 
 void pin_verification(char pass[20],char password[20])
@@ -155,3 +166,5 @@ void f_display_town()
 
 
 
+=======
+>>>>>>> Stashed changes
