@@ -7,6 +7,15 @@
 #include<conio.h>
 #include<string>
 #include "boma.h"
+#include <ctime>  /* time_t, time, ctime */
+#include <fstream>
+int amount_paid;
+string m_boma_contact = "+254756438790";
+string m_boma_email = "mbomaresidentials@gmail.com"; //housing agency contact info(in case of any query)
+string house_type;
+string residential_area;
+ char pass[20];
+char password[20];
 
 /*
 #include<string>
@@ -24,10 +33,13 @@ int qstate;
 
 int main()
 {
-    
+    Boma ops;
+    Payment_runda runda;
+    Payment_ruaka ruaka;
+    Payment_kahawaa kahawaa;
+
     user_registration person;
-    char pass[20];
-    char password[20];
+   
 // diplsays welcoming note to the user
 void f_welcome_note();
 
@@ -52,11 +64,10 @@ void f_welcome_note();
 
     
     
-    
-//displaying entered information about tyhe user
-    
-        while (1)
-        {
+    while(1){
+
+  state current = ACCOUNT_CREATION;
+//displaying entered information about tyhe use
             /* code */
             switch (current)
             {
@@ -78,15 +89,21 @@ this icludes the entered name,email,hpone _number etc
                 break;
 
                 case TOWN_DISPLAY:
+                f_queery_display();
+                choice_input(ops);
                 break;
 
                 case HOUSE_TYPE_DISPLAY:
+                choice_input(ops);
+                runda_payment_details(runda);
                 break;
 
                 case MODE_OF_PAYMENT:
+                f_payment_options();
                 break;
 
                 case ISSUANCE_OF_RECIPT:
+                f_give_receipt();
                 break;
 
             
@@ -96,10 +113,10 @@ this icludes the entered name,email,hpone _number etc
                 break;
             }
         }
-        
-
 }
+      
 
+   
 
 
    
