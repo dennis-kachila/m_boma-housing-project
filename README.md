@@ -1,4 +1,6 @@
 # m_boma-housing-project
+This a  project that was undertaken in partial fulfillment of a credit to be earned in a Computer Programming Unit in the University.
+The requirements where that to come up with a project and implement it using the C++ PROGRAMMING LANGUAGE
 m_boma housing project that allows tenants to finds their desired houses anywhere they wish to rent
 
 
