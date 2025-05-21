@@ -101,23 +101,3 @@ public:
 };
 
 #endif // MBOMA_HOUSING_SYSTEM_H
-
-// Add a forward declaration for the DBConnector
-class DBConnector;
-
-// Update the MBomaHousingSystem class declaration to include DBConnector
-class MBomaHousingSystem {
-private:
-    std::vector<User> users;
-    std::vector<Location> locations;
-    std::vector<House> houses;
-    std::vector<Booking> bookings;
-    std::vector<Payment> payments;
-    
-    DBConnector* dbConnector;
-    bool useDatabase;
-    
-    int currentUserId;
-    bool isLoggedIn;
-    
-    // Rest of the class remains the same...

@@ -1,6 +1,5 @@
 #include "include/User.h"
 #include <iostream>
-#include <string>
 
 User::User() : isLoggedIn(false) {}
 
