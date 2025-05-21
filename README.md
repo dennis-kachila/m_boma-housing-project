@@ -1,7 +1,7 @@
-# m_boma Housing Project
+# M-boma Housing Project
 
 ## Overview
-m_boma Housing Project is a C++ application designed to help tenants find and book their desired houses for rent across various counties. The project was developed as part of a Computer Programming Unit at the university.
+M-boma Housing Project is a C++ application designed to help tenants find and book their desired houses for rent across various counties. The project was developed as part of a Computer Programming Unit at the university.
 
 ## Table of Contents
 - [Overview](#overview)
@@ -117,6 +117,38 @@ The archived version provides valuable historical context for understanding the 
    sudo apt-get install -y libmysqlclient-dev libssl-dev
    ```
 
+### MySQL Server Management
+
+1. Start MySQL server:
+   ```bash
+   sudo systemctl start mysql
+   ```
+
+2. Stop MySQL server:
+   ```bash
+   sudo systemctl stop mysql
+   ```
+
+3. Restart MySQL server:
+   ```bash
+   sudo systemctl restart mysql
+   ```
+
+4. Check MySQL server status:
+   ```bash
+   sudo systemctl status mysql
+   ```
+
+5. Enable MySQL server to start on boot:
+   ```bash
+   sudo systemctl enable mysql
+   ```
+
+6. Disable MySQL server automatic startup:
+   ```bash
+   sudo systemctl disable mysql
+   ```
+
 ### Database Setup
 
 1. Create the database, user, and grant permissions:
@@ -192,6 +224,109 @@ Follow the on-screen instructions to:
    ```bash
    mysql -umboma_user -pmboma_password -e "USE mboma_housing; SHOW TABLES;"
    ```
+
+### Database Verification and Sample Queries
+
+#### Check if Database Exists
+
+```bash
+# List all databases to verify mboma_housing exists
+mysql -umboma_user -pmboma_password -e "SHOW DATABASES;"
+
+# Check if database user has proper permissions
+mysql -umboma_user -pmboma_password -e "SHOW GRANTS FOR CURRENT_USER;"
+```
+
+#### Check Database Tables and Structure
+
+```bash
+# List all tables in the database
+mysql -umboma_user -pmboma_password -e "USE mboma_housing; SHOW TABLES;"
+
+# View table structure
+mysql -umboma_user -pmboma_password -e "USE mboma_housing; DESCRIBE user_info;"
+mysql -umboma_user -pmboma_password -e "USE mboma_housing; DESCRIBE houses;"
+mysql -umboma_user -pmboma_password -e "USE mboma_housing; DESCRIBE town;"
+```
+
+#### Sample Queries
+
+```bash
+# View all counties/towns
+mysql -umboma_user -pmboma_password -e "USE mboma_housing; SELECT * FROM town;"
+
+# View all houses
+mysql -umboma_user -pmboma_password -e "USE mboma_housing; SELECT * FROM houses;"
+
+# View available houses
+mysql -umboma_user -pmboma_password -e "USE mboma_housing; SELECT * FROM houses WHERE is_available = TRUE;"
+
+# View houses in a specific town
+mysql -umboma_user -pmboma_password -e "USE mboma_housing; SELECT h.house_id, h.house_type, t.town_name FROM houses h JOIN town t ON h.town_id = t.town_id WHERE t.town_name = 'Karen';"
+
+# View rental prices
+mysql -umboma_user -pmboma_password -e "USE mboma_housing; SELECT h.house_type, t.town_name, rc.deposit, rc.monthly_rent FROM rental_cost rc JOIN houses h ON rc.house_id = h.house_id AND rc.town_id = h.town_id JOIN town t ON h.town_id = t.town_id;"
+```
+
+#### Run SQL Script File
+
+If you've already created your own database schema file:
+
+```bash
+# Import a custom schema file
+mysql -umboma_user -pmboma_password mboma_housing < path/to/your/schema.sql
+```
+
+#### Interactive MySQL Session
+
+For more complex queries or database exploration:
+
+```bash
+# Start an interactive MySQL session
+mysql -umboma_user -pmboma_password mboma_housing
+
+# Then you can run any SQL commands, for example:
+mysql> SELECT * FROM houses;
+mysql> SELECT * FROM user_info;
+mysql> \q  # To quit the MySQL interactive session
+```
+
+### Database Backup and Restoration
+
+#### Backup the Database
+
+```bash
+# Create a full database backup
+mysqldump -umboma_user -pmboma_password mboma_housing > mboma_backup.sql
+
+# Backup specific tables
+mysqldump -umboma_user -pmboma_password mboma_housing houses town > houses_towns_backup.sql
+
+# Create a compressed backup
+mysqldump -umboma_user -pmboma_password mboma_housing | gzip > mboma_backup.sql.gz
+```
+
+#### Restore the Database
+
+```bash
+# Restore from a backup file
+mysql -umboma_user -pmboma_password mboma_housing < mboma_backup.sql
+
+# Restore from a compressed backup
+gunzip < mboma_backup.sql.gz | mysql -umboma_user -pmboma_password mboma_housing
+```
+
+#### Schedule Regular Backups
+
+Add to your crontab for automated backups:
+
+```bash
+# Edit crontab
+crontab -e
+
+# Add this line to run a backup every day at 2 AM
+0 2 * * * mysqldump -umboma_user -pmboma_password mboma_housing > /path/to/backup/mboma_$(date +\%Y\%m\%d).sql
+```
 
 ### Compilation Errors
 
