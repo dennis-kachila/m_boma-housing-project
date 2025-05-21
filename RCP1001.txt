@@ -1,0 +1,11 @@
+========== PAYMENT RECEIPT ==========
+Receipt Number: RCP1001
+Date: 2025-05-21 19:01:43
+Customer: nono
+Phone: 0746364734
+Email: nono@gmail.com
+Property: Villa at Karen Drive, House #456
+Amount Paid: KES 150000.00
+Payment Method: M-Pesa
+Status: PAID
+======================================

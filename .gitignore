@@ -1,0 +1,66 @@
+# M-Boma Housing Project .gitignore
+
+# Build artifacts
+/bin/
+/obj/
+/build/
+*.o
+*.a
+*.so
+*.dylib
+*.dll
+*.exe
+
+# Receipt files
+#RCP*.txt
+
+# IDE and editor files
+.vscode/
+.idea/
+.vs/
+*.swp
+*~
+*.swo
+.DS_Store
+Thumbs.db
+
+# Database and environment specific files
+*.env
+*.sql.bak
+
+# MySQL local data
+mysql_data/
+
+# Logs
+*.log
+log/
+logs/
+
+# User-specific config files
+/src/include/DBConfig.local.h
+
+# Temporary files
+*.tmp
+*.bak
+.*.swp
+
+# Testing files
+test-results/
+coverage/
+
+# Generated documentation
+/doc/
+/docs/html/
+/docs/latex/
+
+# Dependency directories
+/vendor/
+/node_modules/
+
+# System files
+.directory
+.DS_Store
+.Spotlight-V100
+.Trashes
+ehthumbs.db
+Thumbs.db
