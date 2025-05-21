@@ -6,10 +6,18 @@ m_boma Housing Project is a C++ application designed to help tenants find and bo
 ## Table of Contents
 - [Overview](#overview)
 - [Features](#features)
+- [Project History and Archive](#project-history-and-archive)
 - [Project Structure](#project-structure)
 - [Setup & Installation](#setup--installation)
 - [Usage](#usage)
+- [Troubleshooting](#troubleshooting)
+- [Common Code Issues and Fixes](#common-code-issues-and-fixes)
+- [Database Configuration Details](#database-configuration-details)
+- [Security Considerations](#security-considerations)
+- [Project Dependencies](#project-dependencies)
+- [Running in Production](#running-in-production)
 - [Contributing](#contributing)
+- [Future Improvements](#future-improvements)
 - [License](#license)
 
 ## Features
@@ -24,8 +32,32 @@ m_boma Housing Project is a C++ application designed to help tenants find and bo
 - Database integration for persistent storage
 - Error handling and data validation
 
+## Project History and Archive
+
+The `/Archive` directory contains the original version of the project that was developed during university studies after learning C/C++ on February 17, 2020. This early work has been preserved to document the evolution of the project and to appreciate the initial implementation that laid the foundation for the current system.
+
+The archived version represents my first significant programming project after learning the basics of C/C++, showcasing the application of fundamental programming concepts in a real-world context. It follows a more straightforward, monolithic design typical of early programming projects.
+
+Key improvements in the current implementation over the archived university project:
+- Refactored from a monolithic design to a modular, object-oriented architecture
+- Enhanced database schema with proper relationships and constraints
+- Improved user interface and interaction flow
+- Added comprehensive error handling and validation
+- Implemented secure password handling and SQL injection protection
+- Created detailed documentation and setup instructions
+
+The archived version provides valuable historical context for understanding the project's origins and my personal development journey as a programmer.
+
 ## Project Structure
 ```
+├── Archive/                         # Previous version of the project
+│   ├── README.md                    # Original project description
+│   ├── database/                    # Original database schema
+│   │   └── housing_database.sql
+│   └── source_code/                 # Original source code implementation
+│       ├── boma_main.cpp
+│       ├── boma.cpp
+│       └── boma.h
 ├── database/
 │   └── create_database.sql         # Enhanced SQL database schema
 ├── src/

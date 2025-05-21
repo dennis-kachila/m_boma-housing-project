@@ -81,6 +81,14 @@
 - Make build system
 - OpenSSL development libraries
 
+### Project History Preservation (May 21, 2025)
+1. **University Project Archive**: Preserved the original project developed during university studies on February 17, 2020, after learning C/C++
+2. **Educational Context**: Maintained original code as a reference point showing programming skill progression over 5+ years
+3. **Historical Context**: Kept original README and source files to document project evolution
+4. **Legacy Database Schema**: Preserved original database design from 2020 for reference
+5. **Documentation Updates**: Added explanations about the university project context in the main README
+6. **Code Evolution**: Provided clear distinction between original academic implementation and new professional architecture
+
 ### Installation Process
 1. Successfully installed MySQL server and verified service is running
 2. Installed required development libraries:
