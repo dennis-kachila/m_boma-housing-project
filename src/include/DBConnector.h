@@ -4,6 +4,7 @@
 #include <mysql/mysql.h>
 #include <string>
 #include <vector>
+#include <map>  // Add missing include for std::map
 #include "User.h"
 #include "House.h"
 #include "Location.h"
@@ -15,6 +16,7 @@ class DBConnector {
 private:
     MYSQL* conn;
     bool connected;
+    std::string lastError;  // Store the last error message
     
     /**
      * @brief Execute a query and check for errors
@@ -22,6 +24,12 @@ private:
      * @return true if query was successful
      */
     bool executeQuery(const std::string& query);
+    
+    /**
+     * @brief Set the last error message
+     * @param error Error message to store
+     */
+    void setError(const std::string& error);
     
 public:
     /**
@@ -33,6 +41,12 @@ public:
      * @brief Destructor
      */
     ~DBConnector();
+    
+    /**
+     * @brief Get the last error message
+     * @return The last error message
+     */
+    std::string getLastError() const;
     
     /**
      * @brief Connect to the MySQL database
@@ -98,6 +112,37 @@ public:
      * @return Map of payment details
      */
     std::map<std::string, std::string> getPaymentDetails(int houseId, int townId);
+    
+    /**
+     * @brief Search for houses based on criteria
+     * @param type House type (optional)
+     * @param minRent Minimum monthly rent (optional)
+     * @param maxRent Maximum monthly rent (optional)
+     * @param townId Town ID (optional)
+     * @return Vector of matching House objects
+     */
+    std::vector<House> searchHouses(const std::string& type = "", 
+                                   double minRent = 0.0,
+                                   double maxRent = -1.0,  
+                                   int townId = -1);
+                                   
+    /**
+     * @brief Create a new booking in the database
+     * @param userId User making the booking
+     * @param houseId House being booked
+     * @param townId Town where house is located
+     * @return Booking ID if successful, -1 if failed
+     */
+    int createBooking(int userId, int houseId, int townId);
+    
+    /**
+     * @brief Record a payment in the database
+     * @param bookingId Booking that is being paid for
+     * @param amount Payment amount
+     * @param paymentMethod Method of payment (e.g. "M-Pesa", "Bank Transfer")
+     * @return Receipt number if successful, empty string if failed
+     */
+    std::string recordPayment(int bookingId, double amount, const std::string& paymentMethod);
 };
 
 #endif // DB_CONNECTOR_H

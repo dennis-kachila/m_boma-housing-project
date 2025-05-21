@@ -87,6 +87,17 @@ private:
      * @param amount Amount to pay
      */
     void processPayment(int bookingId, double amount);
+    
+    /**
+     * @brief Search for houses based on user criteria
+     */
+    void searchHouses();
+    
+    /**
+     * @brief Display search results
+     * @param searchResults Vector of houses matching search criteria
+     */
+    void displaySearchResults(const std::vector<House>& searchResults);
 
 public:
     /**
@@ -95,7 +106,12 @@ public:
     MBomaHousingSystem();
     
     /**
-     * @brief Run the housing system
+     * @brief Destructor
+     */
+    ~MBomaHousingSystem();
+    
+    /**
+     * @brief Run the housing management system
      */
     void run();
 };

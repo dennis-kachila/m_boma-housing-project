@@ -7,6 +7,8 @@ CREATE DATABASE IF NOT EXISTS mboma_housing;
 USE mboma_housing;
 
 -- Drop existing tables if they exist
+DROP TABLE IF EXISTS payments;
+DROP TABLE IF EXISTS bookings;
 DROP TABLE IF EXISTS payment_details;
 DROP TABLE IF EXISTS rental_cost;
 DROP TABLE IF EXISTS houses;
@@ -25,8 +27,12 @@ CREATE TABLE houses(
   town_id INT,
   house_id INT,
   house_type VARCHAR(50),
+  is_available BOOLEAN DEFAULT TRUE,
+  is_booked BOOLEAN DEFAULT FALSE,
+  booked_until DATETIME,
   PRIMARY KEY(town_id, house_id),
-  FOREIGN KEY (town_id) REFERENCES town(town_id)
+  FOREIGN KEY (town_id) REFERENCES town(town_id),
+  INDEX (house_id, town_id)  -- Add index for foreign key reference
 );
 
 -- Create rental_cost table
@@ -99,18 +105,18 @@ INSERT INTO town VALUES(300,'Kahawa');
 
 -- Houses
 -- Runda
-INSERT INTO houses VALUES(100,101,'Bungalow');
-INSERT INTO houses VALUES(100,201,'Mansionette');
+INSERT INTO houses(town_id, house_id, house_type) VALUES(100, 101, 'Bungalow');
+INSERT INTO houses(town_id, house_id, house_type) VALUES(100, 201, 'Mansionette');
 -- Ruaka
-INSERT INTO houses VALUES(200,101,'Bungalow');
-INSERT INTO houses VALUES(200,301,'Appartments & Flats');
-INSERT INTO houses VALUES(200,401,'Bedsitters');
-INSERT INTO houses VALUES(200,501,'Singles');
+INSERT INTO houses(town_id, house_id, house_type) VALUES(200, 101, 'Bungalow');
+INSERT INTO houses(town_id, house_id, house_type) VALUES(200, 301, 'Appartments & Flats');
+INSERT INTO houses(town_id, house_id, house_type) VALUES(200, 401, 'Bedsitters');
+INSERT INTO houses(town_id, house_id, house_type) VALUES(200, 501, 'Singles');
 -- Kahawa
-INSERT INTO houses VALUES(300,101,'Bungalow');
-INSERT INTO houses VALUES(300,301,'Appartments & Flats');
-INSERT INTO houses VALUES(300,401,'Bedsitters');
-INSERT INTO houses VALUES(300,501,'Singles');
+INSERT INTO houses(town_id, house_id, house_type) VALUES(300, 101, 'Bungalow');
+INSERT INTO houses(town_id, house_id, house_type) VALUES(300, 301, 'Appartments & Flats');
+INSERT INTO houses(town_id, house_id, house_type) VALUES(300, 401, 'Bedsitters');
+INSERT INTO houses(town_id, house_id, house_type) VALUES(300, 501, 'Singles');
 
 -- Rental costs
 -- Runda

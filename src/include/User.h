@@ -72,6 +72,12 @@ public:
      * @return User's phone number
      */
     std::string getPhone() const;
+    
+    /**
+     * @brief Get user's password (hashed)
+     * @return User's hashed password
+     */
+    std::string getPassword() const;
 };
 
 #endif // USER_H

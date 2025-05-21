@@ -1,11 +1,14 @@
 #include "include/User.h"
+#include "include/Utils.h"
 #include <iostream>
+#include <limits>
 
 User::User() : isLoggedIn(false) {}
 
 User::User(const std::string& name, const std::string& phone, 
            const std::string& email, const std::string& password)
-    : name(name), phone(phone), email(email), password(password), isLoggedIn(false) {}
+    : name(name), phone(phone), email(email), 
+      password(hashPassword(password)), isLoggedIn(false) {}
 
 bool User::registerUser() {
     std::cout << "\n===== USER REGISTRATION =====\n";
@@ -19,15 +22,31 @@ bool User::registerUser() {
     std::cout << "Enter your email: ";
     std::getline(std::cin, email);
     
-    std::cout << "Enter your password: ";
-    std::getline(std::cin, password);
+    std::string plainPassword;
+    std::string confirmPassword;
+    bool passwordsMatch = false;
+    
+    while (!passwordsMatch) {
+        std::cout << "Enter your password: ";
+        std::getline(std::cin, plainPassword);
+        
+        std::cout << "Confirm your password: ";
+        std::getline(std::cin, confirmPassword);
+        
+        if (plainPassword == confirmPassword) {
+            passwordsMatch = true;
+            password = hashPassword(plainPassword); // Store the hashed password
+        } else {
+            std::cout << "Passwords do not match. Please try again.\n";
+        }
+    }
     
     std::cout << "\nRegistration successful!\n";
     return true;
 }
 
 bool User::login(const std::string& inputEmail, const std::string& inputPassword) {
-    if (email == inputEmail && password == inputPassword) {
+    if (email == inputEmail && verifyPassword(inputPassword, password)) {
         isLoggedIn = true;
         return true;
     }
@@ -48,6 +67,10 @@ std::string User::getName() const {
 
 std::string User::getEmail() const {
     return email;
+}
+
+std::string User::getPassword() const {
+    return password;
 }
 
 std::string User::getPhone() const {

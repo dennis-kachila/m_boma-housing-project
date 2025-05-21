@@ -1,10 +1,36 @@
 #include "include/MBomaHousingSystem.h"
+#include "include/DBConnector.h"
+#include "include/DBConfig.h"
 #include <iostream>
 #include <limits>
 #include <iomanip>
 
-MBomaHousingSystem::MBomaHousingSystem() : currentUserId(0), isLoggedIn(false) {
+MBomaHousingSystem::MBomaHousingSystem() : currentUserId(0), dbConnector(nullptr), isLoggedIn(false), useDatabase(false) {
+    // Try to initialize database connection
+    dbConnector = new DBConnector();
+    if (dbConnector->connect(DBConfig::DB_HOST, DBConfig::DB_USER, DBConfig::DB_PASS, DBConfig::DB_NAME)) {
+        useDatabase = true;
+        std::cout << "Database connection established successfully.\n";
+        // In a production system, we would load data from the database
+        // For this implementation, we'll still use the sample data
+    } else {
+        std::cout << "Warning: Database connection failed. Using in-memory data.\n";
+        std::cout << "Error: " << dbConnector->getLastError() << "\n";
+        delete dbConnector;
+        dbConnector = nullptr;
+    }
+    
+    // Initialize sample data
     initializeData();
+}
+
+MBomaHousingSystem::~MBomaHousingSystem() {
+    // Clean up database connection if it exists
+    if (dbConnector) {
+        dbConnector->disconnect();
+        delete dbConnector;
+        dbConnector = nullptr;
+    }
 }
 
 void MBomaHousingSystem::initializeData() {
@@ -175,12 +201,14 @@ void MBomaHousingSystem::processPayment(int bookingId, double amount) {
     std::cin >> choice;
     std::cin.ignore(std::numeric_limits<std::streamsize>::max(), '\n');
     
+    // Declare variables outside switch to avoid jump errors
+    std::string phone;
+    
     switch (choice) {
         case 1:
             paymentMethod = "M-Pesa";
             std::cout << "\nSimulating M-Pesa payment...\n";
             std::cout << "Enter your M-Pesa phone number: ";
-            std::string phone;
             std::getline(std::cin, phone);
             std::cout << "Enter M-Pesa PIN: ****\n";
             std::cout << "Payment processing...\n";
@@ -226,6 +254,193 @@ void MBomaHousingSystem::processPayment(int bookingId, double amount) {
     }
     
     std::cout << "Payment successful!\n";
+}
+
+void MBomaHousingSystem::searchHouses() {
+    std::cout << "\n===== SEARCH HOUSES =====\n";
+    
+    std::cin.ignore(std::numeric_limits<std::streamsize>::max(), '\n');
+    
+    // Get search criteria from user
+    std::string type = "";
+    double minRent = 0.0;
+    double maxRent = -1.0;
+    int townId = -1;
+    
+    std::cout << "Enter house type (leave blank for any): ";
+    std::getline(std::cin, type);
+    
+    std::cout << "Enter minimum monthly rent (0 for any): ";
+    std::string minRentStr;
+    std::getline(std::cin, minRentStr);
+    if (!minRentStr.empty()) {
+        try {
+            minRent = std::stod(minRentStr);
+        } catch (const std::exception& e) {
+            std::cout << "Invalid input, using default (0).\n";
+            minRent = 0.0;
+        }
+    }
+    
+    std::cout << "Enter maximum monthly rent (leave blank for any): ";
+    std::string maxRentStr;
+    std::getline(std::cin, maxRentStr);
+    if (!maxRentStr.empty()) {
+        try {
+            maxRent = std::stod(maxRentStr);
+        } catch (const std::exception& e) {
+            std::cout << "Invalid input, using no maximum.\n";
+            maxRent = -1.0;
+        }
+    }
+    
+    // Ask for location if desired
+    std::cout << "Do you want to search in a specific town? (y/n): ";
+    std::string searchByTown;
+    std::getline(std::cin, searchByTown);
+    
+    if (searchByTown == "y" || searchByTown == "Y") {
+        // Display counties first
+        displayCounties();
+        
+        std::cout << "\nEnter county number: ";
+        int countyId;
+        std::cin >> countyId;
+        std::cin.ignore(std::numeric_limits<std::streamsize>::max(), '\n');
+        
+        // Display towns in the selected county
+        displayTowns(countyId);
+        
+        std::cout << "\nEnter town number: ";
+        std::cin >> townId;
+        std::cin.ignore(std::numeric_limits<std::streamsize>::max(), '\n');
+    }
+    
+    std::cout << "\nSearching for houses...\n";
+    
+    std::vector<House> searchResults;
+    
+    if (useDatabase && dbConnector && dbConnector->isConnected()) {
+        // Use database search if available
+        searchResults = dbConnector->searchHouses(type, minRent, maxRent, townId);
+    } else {
+        // Use in-memory search
+        for (const auto& house : houses) {
+            bool matches = true;
+            
+            // Check type
+            if (!type.empty()) {
+                if (house.getType().find(type) == std::string::npos) {
+                    matches = false;
+                }
+            }
+            
+            // Check min rent
+            if (minRent > 0 && house.getMonthlyRent() < minRent) {
+                matches = false;
+            }
+            
+            // Check max rent
+            if (maxRent > 0 && house.getMonthlyRent() > maxRent) {
+                matches = false;
+            }
+            
+            // Check town
+            if (townId > 0 && house.getLocationId() != townId) {
+                matches = false;
+            }
+            
+            if (matches && house.getAvailability()) {
+                searchResults.push_back(house);
+            }
+        }
+    }
+    
+    // Display search results
+    displaySearchResults(searchResults);
+}
+
+void MBomaHousingSystem::displaySearchResults(const std::vector<House>& searchResults) {
+    if (searchResults.empty()) {
+        std::cout << "\nNo houses match your search criteria.\n";
+    } else {
+        std::cout << "\n===== SEARCH RESULTS (" << searchResults.size() << " houses found) =====\n";
+        
+        for (const auto& house : searchResults) {
+            std::cout << "\nHouse ID: " << house.getId() << "\n";
+            std::cout << "Type: " << house.getType() << "\n";
+            std::cout << "Address: " << house.getAddress() << "\n";
+            std::cout << "Deposit Fee: KES " << std::fixed << std::setprecision(2) << house.getDepositFee() << "\n";
+            std::cout << "Monthly Rent: KES " << std::fixed << std::setprecision(2) << house.getMonthlyRent() << "\n";
+            
+            // Get town name
+            std::string townName = "Unknown";
+            for (const auto& location : locations) {
+                if (location.getId() == house.getLocationId()) {
+                    townName = location.getName();
+                    break;
+                }
+            }
+            
+            std::cout << "Town: " << townName << "\n";
+            std::cout << "Map Link: " << house.getMapLink() << "\n";
+            std::cout << "Status: " << (house.getBookingStatus() ? "Booked until " + house.getBookedUntil() : "Available") << "\n";
+            std::cout << "------------------------------\n";
+        }
+        
+        std::cout << "\nWould you like to book one of these houses? (y/n): ";
+        std::string bookHouse;
+        std::getline(std::cin, bookHouse);
+        
+        if (bookHouse == "y" || bookHouse == "Y") {
+            std::cout << "Enter the House ID you want to book: ";
+            int houseId;
+            std::cin >> houseId;
+            std::cin.ignore(std::numeric_limits<std::streamsize>::max(), '\n');
+            
+            // Find the house
+            House* house = nullptr;
+            for (auto& h : searchResults) {
+                if (h.getId() == houseId) {
+                    house = findHouse(houseId);
+                    break;
+                }
+            }
+            
+            if (house && house->getAvailability() && !house->getBookingStatus()) {
+                // Create booking
+                int bookingId = getNextId("booking");
+                Booking booking(bookingId, currentUserId, houseId);
+                bookings.push_back(booking);
+                
+                // Mark house as booked
+                house->book(booking.getExpiryDate());
+                
+                std::cout << "\nHouse booked successfully!\n";
+                std::cout << "Booking ID: " << bookingId << "\n";
+                std::cout << "Booking Date: " << booking.getBookingDate() << "\n";
+                std::cout << "Expiry Date: " << booking.getExpiryDate() << "\n";
+                
+                // Ask for payment
+                std::cout << "\nWould you like to make a payment now? (y/n): ";
+                char payNow;
+                std::cin >> payNow;
+                std::cin.ignore(std::numeric_limits<std::streamsize>::max(), '\n');
+                
+                if (payNow == 'y' || payNow == 'Y') {
+                    processPayment(bookingId, house->getDepositFee());
+                } else {
+                    std::cout << "You can make the payment later from the 'View My Bookings' menu.\n";
+                }
+            } else if (house && house->getBookingStatus()) {
+                std::cout << "This house is already booked until " << house->getBookedUntil() << ".\n";
+            } else {
+                std::cout << "Invalid house ID. Please try again.\n";
+            }
+        }
+    }
+    
+    waitForEnter();
 }
 
 void MBomaHousingSystem::run() {
@@ -299,10 +514,11 @@ void MBomaHousingSystem::run() {
             std::cout << "\nWelcome, " << currentUser->getName() << "!\n";
             
             std::cout << "\n1. Browse Counties\n";
-            std::cout << "2. View My Bookings\n";
-            std::cout << "3. Logout\n";
-            std::cout << "4. Exit\n";
-            std::cout << "\nEnter your choice (1-4): ";
+            std::cout << "2. Search Houses\n";
+            std::cout << "3. View My Bookings\n";
+            std::cout << "4. Logout\n";
+            std::cout << "5. Exit\n";
+            std::cout << "\nEnter your choice (1-5): ";
             
             int choice;
             std::cin >> choice;
@@ -425,7 +641,11 @@ void MBomaHousingSystem::run() {
                     }
                     break;
                 }
-                case 2: {
+                case 2:
+                    // Search Houses
+                    searchHouses();
+                    break;
+                case 3: {
                     // View My Bookings
                     std::cout << "\n===== MY BOOKINGS =====\n";
                     bool hasBookings = false;
@@ -464,14 +684,14 @@ void MBomaHousingSystem::run() {
                     waitForEnter();
                     break;
                 }
-                case 3:
+                case 4:
                     // Logout
                     currentUserId = 0;
                     isLoggedIn = false;
                     std::cout << "Logged out successfully.\n";
                     waitForEnter();
                     break;
-                case 4:
+                case 5:
                     // Exit
                     running = false;
                     break;
