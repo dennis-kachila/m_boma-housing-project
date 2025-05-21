@@ -14,9 +14,9 @@ OBJECTS = $(patsubst $(SRCDIR)/%.cpp,$(OBJDIR)/%.o,$(SOURCES))
 # Target executable
 TARGET = $(BINDIR)/mboma
 
-# MySQL config flags (uncomment when implementing database integration)
-# MYSQL_CFLAGS = $(shell mysql_config --cflags)
-# MYSQL_LIBS = $(shell mysql_config --libs)
+# MySQL config flags
+MYSQL_CFLAGS = $(shell mysql_config --cflags)
+MYSQL_LIBS = $(shell mysql_config --libs)
 
 .PHONY: all clean directories
 
@@ -27,10 +27,10 @@ mkdir -p $(OBJDIR)
 mkdir -p $(BINDIR)
 
 $(OBJDIR)/%.o: $(SRCDIR)/%.cpp
-$(CC) $(CFLAGS) -I$(INCLUDEDIR) -c $< -o $@
+	$(CC) $(CFLAGS) $(MYSQL_CFLAGS) -I$(INCLUDEDIR) -c $< -o $@
 
 $(TARGET): $(OBJECTS)
-$(CC) $(OBJECTS) -o $@
+	$(CC) $(OBJECTS) $(MYSQL_LIBS) -o $@
 
 clean:
 rm -rf $(OBJDIR) $(BINDIR)
