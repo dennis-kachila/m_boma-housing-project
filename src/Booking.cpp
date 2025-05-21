@@ -24,6 +24,10 @@ int Booking::getId() const {
     return id;
 }
 
+void Booking::setId(int newId) {
+    id = newId;
+}
+
 int Booking::getUserId() const {
     return userId;
 }

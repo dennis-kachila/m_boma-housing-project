@@ -31,6 +31,12 @@ public:
     int getId() const;
     
     /**
+     * @brief Set booking ID
+     * @param newId New booking identifier (typically from database)
+     */
+    void setId(int newId);
+    
+    /**
      * @brief Get user ID
      * @return User ID of booking owner
      */

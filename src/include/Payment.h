@@ -33,6 +33,22 @@ public:
      * @param house House that was paid for
      */
     void generateReceipt(const User& user, const House& house) const;
+    
+    /**
+     * @brief Set receipt number
+     * @param receiptNum The receipt number to set
+     */
+    void setReceiptNumber(const std::string& receiptNum) {
+        receiptNumber = receiptNum;
+    }
+    
+    /**
+     * @brief Get receipt number
+     * @return The receipt number
+     */
+    std::string getReceiptNumber() const {
+        return receiptNumber;
+    }
 };
 
 #endif // PAYMENT_H
