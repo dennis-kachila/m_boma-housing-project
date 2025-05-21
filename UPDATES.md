@@ -72,54 +72,8 @@
 6. **Database Connectivity**: Verified connection retry mechanism works as expected
 7. **Error Handling**: Tested error scenarios with proper user feedback
 
-## Environment Setup (May 21, 2025)
-
-### System Requirements
-- Linux-based operating system (tested on Ubuntu)
-- MySQL 5.7 or higher
-- g++ compiler with C++11 support
-- Make build system
-- OpenSSL development libraries
-
-### Project History Preservation (May 21, 2025)
-1. **University Project Archive**: Preserved the original project developed during university studies on February 17, 2020, after learning C/C++
-2. **Educational Context**: Maintained original code as a reference point showing programming skill progression over 5+ years
-3. **Historical Context**: Kept original README and source files to document project evolution
-4. **Legacy Database Schema**: Preserved original database design from 2020 for reference
-5. **Documentation Updates**: Added explanations about the university project context in the main README
-6. **Code Evolution**: Provided clear distinction between original academic implementation and new professional architecture
-
-### Installation Process
-1. Successfully installed MySQL server and verified service is running
-2. Installed required development libraries:
-   - libmysqlclient-dev for MySQL C API
-   - libssl-dev for OpenSSL integration
-3. Created and configured the database with appropriate permissions
-4. Compiled and tested the application with various scenarios
-
-## Specific Issues Resolved
-
-### 1. MySQL C API Integration
-- **Issue**: Missing header includes led to compile-time errors for MySQL functions
-- **Solution**: Added all necessary headers and verified MySQL development libraries were installed
-- **Benefit**: Application now correctly links to MySQL C API and uses it for database operations
-
-### 2. Database Schema Improvements
-- **Issue**: Foreign key constraints were missing proper indexes
-- **Solution**: Added necessary indexes to support foreign key relationships
-- **Benefit**: Improved database integrity and query performance
-
-### 3. Variable Scope in Switch Statements
-- **Issue**: Variable declarations inside switch cases caused jump errors
-- **Solution**: Moved variable declarations outside the switch blocks
-- **Benefit**: Eliminated compilation errors while maintaining code functionality
-
-### 4. Constructor Member Initialization
-- **Issue**: Warning about member initialization order not matching declaration order
-- **Solution**: Rearranged initialization list to match class declaration
-- **Benefit**: Eliminated warnings and ensured predictable initialization behavior
-
-### 5. Application Configuration
-- **Issue**: Hard-coded database credentials made deployment difficult
-- **Solution**: Moved all configuration to DBConfig.h with clear documentation
-- **Benefit**: Easier configuration management and deployment in different environments
+## Legal Updates (May 21, 2025)
+1. **License Selection**: Added MIT License to the project
+2. **Copyright Notice**: Updated copyright to cover 2020-2025 period
+3. **License File**: Created a separate LICENSE file with full MIT license text
+4. **README Update**: Updated README to reference the new license
