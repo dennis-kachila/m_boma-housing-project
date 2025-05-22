@@ -106,11 +106,23 @@ public:
     std::vector<Location> loadTowns(int countyId);
     
     /**
+     * @brief Load all towns from the database
+     * @return Vector of Location objects representing towns
+     */
+    std::vector<Location> loadAllTowns();
+    
+    /**
      * @brief Load houses in a town from the database
      * @param townId Town ID
      * @return Vector of House objects
      */
     std::vector<House> loadHouses(int townId);
+    
+    /**
+     * @brief Load all houses from the database
+     * @return Vector of House objects
+     */
+    std::vector<House> loadAllHouses();
     
     /**
      * @brief Get payment details for a house

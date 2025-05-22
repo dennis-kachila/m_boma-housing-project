@@ -29,6 +29,13 @@
    - Created sample data with unique 4-character house IDs (e.g., "RB01", "KA01", etc.)
    - Fixed house browsing and booking functionality to work with string IDs
 
+2. **Strict Database Requirements**: Removed all hardcoded sample data
+   - Removed fallback to hardcoded data when database connection fails
+   - Updated all data loading to come exclusively from the database
+   - Enhanced error messaging when database connection fails
+   - Updated initializeData() method to only load from database
+   - Added detailed database setup instructions
+
 ### Code Structure
 1. **Modular Architecture**: Fully implemented OOP principles with proper separation of concerns
 2. **Error Handling**: Added comprehensive error handling throughout the codebase

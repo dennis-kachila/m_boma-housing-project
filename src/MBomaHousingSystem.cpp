@@ -17,16 +17,17 @@ MBomaHousingSystem::MBomaHousingSystem() : currentUserId(0), dbConnector(nullptr
         if (useDatabase && dbConnector && dbConnector->isConnected()) {
             users = dbConnector->loadUsers();
             bookings = dbConnector->loadBookings(); // Load all bookings from database
+            
+            // Initialize all other data from database
+            initializeData();
         }
     } else {
-        std::cout << "Warning: Database connection failed. Using in-memory data.\n";
-        std::cout << "Error: " << dbConnector->getLastError() << "\n";
+        std::cout << "Error: Database connection failed. This application requires a database connection.\n";
+        std::cout << "Error details: " << dbConnector->getLastError() << "\n";
+        std::cout << "Please ensure the database is properly configured and try again.\n";
         delete dbConnector;
         dbConnector = nullptr;
     }
-    
-    // Initialize sample data
-    initializeData();
 }
 
 MBomaHousingSystem::~MBomaHousingSystem() {
@@ -39,56 +40,27 @@ MBomaHousingSystem::~MBomaHousingSystem() {
 }
 
 void MBomaHousingSystem::initializeData() {
-    // Add counties
-    locations.push_back(Location(1, "Nairobi", "county"));
-    locations.push_back(Location(2, "Mombasa", "county"));
-    locations.push_back(Location(3, "Kisumu", "county"));
-    locations.push_back(Location(4, "Nakuru", "county"));
-    
-    // Add towns in Nairobi
-    locations.push_back(Location(101, "Karen", "town", 1));
-    locations.push_back(Location(102, "Kitengela", "town", 1));
-    locations.push_back(Location(103, "Runda", "town", 1));
-    locations.push_back(Location(104, "Westlands", "town", 1));
-    
-    // Add towns in Mombasa
-    locations.push_back(Location(201, "Nyali", "town", 2));
-    locations.push_back(Location(202, "Bamburi", "town", 2));
-    
-    // Add towns in Kisumu
-    locations.push_back(Location(301, "Milimani", "town", 3));
-    
-    // Add towns in Nakuru
-    locations.push_back(Location(401, "Bahati", "town", 4));
-    
-    // Add houses in Karen (Nairobi)
-    houses.push_back(House("K001", "Bungalow", 100000, 50000, 101, "Karen Road, House #123", "https://maps.google.com/?q=Karen,Nairobi"));
-    houses.push_back(House("K002", "Villa", 150000, 75000, 101, "Karen Drive, House #456", "https://maps.google.com/?q=Karen,Nairobi"));
-    
-    // Add houses in Kitengela (Nairobi)
-    houses.push_back(House("KT01", "Apartment", 30000, 15000, 102, "Kitengela Plaza, Apt #10", "https://maps.google.com/?q=Kitengela,Nairobi"));
-    houses.push_back(House("KT02", "Studio", 20000, 10000, 102, "Kitengela Heights, Apt #5", "https://maps.google.com/?q=Kitengela,Nairobi"));
-    
-    // Add houses in Runda (Nairobi)
-    houses.push_back(House("RD01", "Mansion", 200000, 100000, 103, "Runda Estate, House #789", "https://maps.google.com/?q=Runda,Nairobi"));
-    
-    // Add houses in Westlands (Nairobi)
-    houses.push_back(House("WL01", "Penthouse", 120000, 60000, 104, "Westlands Towers, Apt #20", "https://maps.google.com/?q=Westlands,Nairobi"));
-    
-    // Add houses in Nyali (Mombasa)
-    houses.push_back(House("NY01", "Beach House", 180000, 90000, 201, "Nyali Beach Road, House #101", "https://maps.google.com/?q=Nyali,Mombasa"));
-    
-    // Add houses in Bamburi (Mombasa)
-    houses.push_back(House("BM01", "Cottage", 40000, 20000, 202, "Bamburi Beach, House #202", "https://maps.google.com/?q=Bamburi,Mombasa"));
-    
-    // Add houses in Milimani (Kisumu)
-    houses.push_back(House("ML01", "Townhouse", 60000, 30000, 301, "Milimani Estate, House #303", "https://maps.google.com/?q=Milimani,Kisumu"));
-    
-    // Add houses in Bahati (Nakuru)
-    houses.push_back(House("BH01", "Duplex", 50000, 25000, 401, "Bahati Heights, House #404", "https://maps.google.com/?q=Bahati,Nakuru"));
-    
-    // Add a test user
-    users.push_back(User("Test User", "0712345678", "test@example.com", "password"));
+    if (useDatabase && dbConnector && dbConnector->isConnected()) {
+        // Load all data from database
+        
+        // Load counties
+        std::vector<Location> counties = dbConnector->loadCounties();
+        for (const auto& county : counties) {
+            locations.push_back(county);
+        }
+        
+        // Load towns
+        std::vector<Location> towns = dbConnector->loadAllTowns();
+        for (const auto& town : towns) {
+            locations.push_back(town);
+        }
+        
+        // Load houses
+        houses = dbConnector->loadAllHouses();
+    } else {
+        std::cout << "Error: Database connection is required for this application to function.\n";
+        std::cout << "Please ensure the database is properly configured and try again.\n";
+    }
 }
 
 void MBomaHousingSystem::clearScreen() {
@@ -482,6 +454,13 @@ void MBomaHousingSystem::displaySearchResults(const std::vector<House>& searchRe
 }
 
 void MBomaHousingSystem::run() {
+    // Check if database connection is available
+    if (!useDatabase || !dbConnector || !dbConnector->isConnected()) {
+        std::cout << "Error: Database connection is required for this application to function.\n";
+        std::cout << "Please ensure the database is properly configured and try again.\n";
+        return;
+    }
+    
     bool running = true;
     
     while (running) {

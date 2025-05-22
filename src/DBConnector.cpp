@@ -155,7 +155,7 @@ bool DBConnector::authenticateUser(const std::string& email, const std::string& 
 std::vector<Location> DBConnector::loadCounties() {
     std::vector<Location> counties;
     
-    std::string query = "SELECT town_id, town_name FROM town";
+    std::string query = "SELECT county_id, county_name FROM county ORDER BY county_id";
     
     if (!executeQuery(query)) {
         return counties;
@@ -181,9 +181,8 @@ std::vector<Location> DBConnector::loadCounties() {
 std::vector<Location> DBConnector::loadTowns(int countyId) {
     std::vector<Location> towns;
     
-    // This query is just a placeholder as our schema doesn't actually have town-county relationships
-    // In a real application, you would have proper relationships
-    std::string query = "SELECT house_id, house_type FROM houses WHERE town_id = " + std::to_string(countyId);
+    std::string query = "SELECT town_id, town_name FROM town WHERE county_id = " + 
+                        std::to_string(countyId) + " ORDER BY town_id";
     
     if (!executeQuery(query)) {
         return towns;
@@ -196,52 +195,59 @@ std::vector<Location> DBConnector::loadTowns(int countyId) {
     }
     
     MYSQL_ROW row;
-    int townCounter = 1;
     while ((row = mysql_fetch_row(result))) {
-        int id = 100 * countyId + townCounter;
+        int townId = std::stoi(row[0]);
         std::string name = row[1];
-        towns.push_back(Location(id, name, "town", countyId));
-        townCounter++;
+        towns.push_back(Location(townId, name, "town", countyId));
     }
     
     mysql_free_result(result);
     return towns;
 }
 
-std::vector<House> DBConnector::loadHouses(int townId) {
-    std::vector<House> housesList;
+std::vector<House> DBConnector::loadAllHouses() {
+    std::vector<House> houses;
     
-    std::string query = "SELECT h.house_id, h.house_type, rc.deposit, rc.monthly_rent "
-                       "FROM houses h "
-                       "JOIN rental_cost rc ON h.house_id = rc.house_id AND h.town_id = rc.town_id "
-                       "WHERE h.town_id = " + std::to_string(townId);
+    std::string query = "SELECT h.house_id, h.house_type, h.town_id, "
+                        "h.house_address, h.map_link, h.deposit_fee, h.monthly_rent, "
+                        "h.is_available, h.is_booked, h.booked_until "
+                        "FROM houses h ORDER BY h.town_id, h.house_id";
     
     if (!executeQuery(query)) {
-        return housesList;
+        return houses;
     }
     
     MYSQL_RES* result = mysql_store_result(conn);
     if (!result) {
         std::cerr << "Failed to get result: " << mysql_error(conn) << std::endl;
-        return housesList;
+        return houses;
     }
     
     MYSQL_ROW row;
     while ((row = mysql_fetch_row(result))) {
         std::string id = row[0];
         std::string type = row[1];
-        double deposit = std::stod(row[2]);
-        double rent = std::stod(row[3]);
+        int townId = std::stoi(row[2]);
+        std::string address = row[3] ? row[3] : "";
+        std::string mapLink = row[4] ? row[4] : "";
+        double deposit = row[5] ? std::stod(row[5]) : 0.0;
+        double rent = row[6] ? std::stod(row[6]) : 0.0;
+        bool isAvailable = row[7] ? (std::stoi(row[7]) == 1) : true;
+        bool isBooked = row[8] ? (std::stoi(row[8]) == 1) : false;
+        std::string bookedUntil = row[9] ? row[9] : "";
         
-        // Generate a generic address and map link
-        std::string address = type + " in Town " + std::to_string(townId);
-        std::string mapLink = "https://maps.google.com/?q=" + address;
+        House house(id, type, deposit, rent, townId, address, mapLink);
+        house.setAvailability(isAvailable);
         
-        housesList.push_back(House(id, type, deposit, rent, townId, address, mapLink));
+        if (isBooked && !bookedUntil.empty()) {
+            house.book(bookedUntil);
+        }
+        
+        houses.push_back(house);
     }
     
     mysql_free_result(result);
-    return housesList;
+    return houses;
 }
 
 std::map<std::string, std::string> DBConnector::getPaymentDetails(const std::string& houseId, int townId) {
@@ -500,4 +506,31 @@ std::vector<User> DBConnector::loadUsers() {
     
     mysql_free_result(result);
     return users;
+}
+
+std::vector<Location> DBConnector::loadAllTowns() {
+    std::vector<Location> towns;
+    
+    std::string query = "SELECT t.town_id, t.town_name, t.county_id FROM town t ORDER BY t.town_id";
+    
+    if (!executeQuery(query)) {
+        return towns;
+    }
+    
+    MYSQL_RES* result = mysql_store_result(conn);
+    if (!result) {
+        std::cerr << "Failed to get result: " << mysql_error(conn) << std::endl;
+        return towns;
+    }
+    
+    MYSQL_ROW row;
+    while ((row = mysql_fetch_row(result))) {
+        int townId = std::stoi(row[0]);
+        std::string name = row[1];
+        int countyId = std::stoi(row[2]);
+        towns.push_back(Location(townId, name, "town", countyId));
+    }
+    
+    mysql_free_result(result);
+    return towns;
 }

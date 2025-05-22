@@ -3,6 +3,8 @@
 ## Overview
 M-boma Housing Project is a C++ application designed to help tenants find and book their desired houses for rent across various counties. The project was developed as part of a Computer Programming Unit at the university.
 
+**Important Note:** This application requires a MySQL database connection to function. All data is loaded from the database, and there is no fallback to hardcoded sample data.
+
 ## Table of Contents
 - [Overview](#overview)
 - [Features](#features)
@@ -151,6 +153,8 @@ The archived version provides valuable historical context for understanding the 
 
 ### Database Setup
 
+The project includes an `update_db.sh` script that simplifies the process of setting up and resetting the database with sample data. This script requires sudo privileges as it executes MySQL commands as the root user.
+
 1. Create the database, user, and grant permissions:
    ```bash
    sudo mysql -e "CREATE DATABASE IF NOT EXISTS mboma_housing; \
@@ -163,6 +167,16 @@ The archived version provides valuable historical context for understanding the 
    ```bash
    mysql -umboma_user -pmboma_password < database/create_database.sql
    ```
+   
+   Alternatively, you can use the provided convenience script to import the database schema with root privileges:
+   ```bash
+   # Make sure the script is executable
+   chmod +x update_db.sh
+   
+   # Run the script
+   ./update_db.sh
+   ```
+   This script uses sudo to execute the SQL commands, which is useful if you have permission issues with the direct mysql command.
 
 3. Verify the database connection credentials in `src/include/DBConfig.h`:
    ```cpp
@@ -224,6 +238,16 @@ Follow the on-screen instructions to:
    ```bash
    mysql -umboma_user -pmboma_password -e "USE mboma_housing; SHOW TABLES;"
    ```
+
+5. If you encounter permission issues when importing the database schema, use the provided script:
+   ```bash
+   # Make sure the script is executable
+   chmod +x update_db.sh
+   
+   # Run the script
+   ./update_db.sh
+   ```
+   This script executes the SQL commands with sudo privileges, which can help bypass permission issues.
 
 ### Database Verification and Sample Queries
 
@@ -314,7 +338,13 @@ mysql -umboma_user -pmboma_password mboma_housing < mboma_backup.sql
 
 # Restore from a compressed backup
 gunzip < mboma_backup.sql.gz | mysql -umboma_user -pmboma_password mboma_housing
+
+# Reset the database to its original state using the update_db.sh script
+chmod +x update_db.sh  # Ensure the script is executable
+./update_db.sh
 ```
+
+This last option completely resets the database to its original state with the sample data from the SQL script, which is useful during development or when you want to start fresh.
 
 #### Schedule Regular Backups
 

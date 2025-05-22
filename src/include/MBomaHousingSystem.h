@@ -31,7 +31,7 @@ private:
     bool isLoggedIn;
     
     /**
-     * @brief Initialize sample data
+     * @brief Initialize data from database
      */
     void initializeData();
     
