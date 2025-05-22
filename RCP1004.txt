@@ -1,0 +1,11 @@
+========== PAYMENT RECEIPT ==========
+Receipt Number: RCP1004
+Date: 2025-05-22 12:56:44
+Customer: Nano
+Phone: 0743256712
+Email: nano@gmail.com
+Property: Bungalow at Runda Estate, Bungalow #RB01
+Amount Paid: KES 1000000.00
+Payment Method: M-Pesa
+Status: PAID
+======================================

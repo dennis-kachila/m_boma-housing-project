@@ -1,11 +1,11 @@
 ========== PAYMENT RECEIPT ==========
 Receipt Number: RCP1002
-Date: 2025-05-22 12:14:07
-Customer: Nono
-Phone: 0756453245
-Email: nono@gmail.com
-Property: Mansionette at Runda Estate, Mansionette #RM01
-Amount Paid: KES 800000.00
-Payment Method: M-Pesa
+Date: 2025-05-22 12:55:39
+Customer: Nano
+Phone: 0743256712
+Email: nano@gmail.com
+Property: Beach House at Nyali Beach Road, House #101
+Amount Paid: KES 180000.00
+Payment Method: Bank Transfer
 Status: PAID
 ======================================
