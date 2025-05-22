@@ -453,6 +453,91 @@ Constructor() : dbConnector(nullptr), isLoggedIn(false) { }
 
 ## Database Configuration Details
 
+### Database Entity Relationship Diagram (ERD)
+
+The following diagram shows the Entity Relationship Diagram (ERD) for the M-boma Housing Project database. It illustrates all tables, their relationships, primary and foreign keys, and the cardinality between entities.
+
+```mermaid
+erDiagram
+    county ||--o{ town : "contains"
+    town ||--o{ houses : "has"
+    houses ||--o{ rental_cost : "has"
+    houses ||--o{ payment_details : "has"
+    user_info ||--o{ bookings : "makes"
+    houses ||--o{ bookings : "is_booked_in"
+    bookings ||--o{ payments : "has"
+
+    county {
+        int county_id PK
+        string county_name
+    }
+    town {
+        int town_id PK
+        string town_name
+        int county_id FK
+    }
+    houses {
+        string house_id PK
+        int town_id FK
+        string house_type
+        string house_address
+        string map_link
+        decimal deposit_fee
+        decimal monthly_rent
+        boolean is_available
+        boolean is_booked
+        datetime booked_until
+    }
+    rental_cost {
+        string house_id PK,FK
+        string house_cartegory PK
+        int town_id FK
+        int deposit
+        int monthly_rent
+    }
+    payment_details {
+        string house_id PK,FK
+        int town_id FK
+        string house_type
+        string bank_acount
+        string m_pesa_till_no
+        string owner_contacts
+    }
+    user_info {
+        int user_id PK
+        string first_name
+        string second_name
+        string email
+        string phone_number
+        string password
+    }
+    bookings {
+        int booking_id PK
+        int user_id FK
+        string house_id FK
+        int town_id FK
+        datetime booking_date
+        datetime expiry_date
+        boolean is_paid
+    }
+    payments {
+        int payment_id PK
+        int booking_id FK
+        decimal amount
+        datetime payment_date
+        string payment_method
+        string receipt_number
+    }
+```
+
+**ERD Notation Explanation:**
+- `PK`: Primary Key
+- `FK`: Foreign Key
+- `||--o{`: One-to-many relationship (One entity on the left, many entities on the right)
+- Table fields are listed with their data types
+
+### Database Configuration
+
 The database configuration is stored in `src/include/DBConfig.h`:
 
 ```cpp
