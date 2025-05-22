@@ -19,7 +19,6 @@ M-boma Housing Project is a C++ application designed to help tenants find and bo
 - [Project Dependencies](#project-dependencies)
 - [Running in Production](#running-in-production)
 - [Contributing](#contributing)
-- [Future Improvements](#future-improvements)
 - [License](#license)
 
 ## Features
