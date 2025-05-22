@@ -595,34 +595,5 @@ For a production environment, consider the following additional steps:
 ## Contributing
 Contributions are welcome! Please fork the repository and submit a pull request. For major changes, open an issue first to discuss your ideas.
 
-## Future Improvements
-The following features and improvements are planned for future releases:
-
-1. **Enhanced Security**
-   - Implement JWT authentication for secure API access
-   - Add role-based access control for admin users
-   - Add brute force protection for login attempts
-
-2. **User Interface Improvements**
-   - Develop a web interface using a modern framework
-   - Add mobile compatibility for on-the-go house hunting
-   - Implement real-time notifications for booking status
-
-3. **Additional Features**
-   - Integration with payment gateways for real transactions
-   - Landlord accounts for property management
-   - Property rating and review system
-   - Photo gallery for house listings
-
-4. **Performance Optimizations**
-   - Database indexing for faster queries
-   - Caching frequently accessed data
-   - Optimized search algorithms
-
-5. **Testing**
-   - Comprehensive unit tests for all classes
-   - Integration tests for the database connector
-   - Performance benchmarking
-
 ## License
 This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details.
