@@ -35,6 +35,7 @@
    - Enhanced error messaging when database connection fails
    - Updated initializeData() method to only load from database
    - Added detailed database setup instructions
+   - Created `update_db.sh` script to simplify database setup and reset
 
 ### Code Structure
 1. **Modular Architecture**: Fully implemented OOP principles with proper separation of concerns
@@ -52,6 +53,13 @@
 3. **Schema Optimization**: Added proper indexes for foreign key constraints
 4. **House Status Tracking**: Added columns for tracking house availability and booking status
 5. **Detailed Documentation**: Added comprehensive database setup instructions in README
+
+### Database Management (May 22, 2025)
+1. **Database Update Script**: Added `update_db.sh` script for simplified database setup
+   - Created a shell script to automate database schema import
+   - Script uses sudo privileges to handle permission issues
+   - Added documentation for using the script to reset the database
+   - Updated instructions for making the script executable
 
 ### Documentation
 1. **Enhanced README**: Updated with detailed installation and troubleshooting instructions
