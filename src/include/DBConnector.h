@@ -8,6 +8,7 @@
 #include "User.h"
 #include "House.h"
 #include "Location.h"
+#include "Booking.h"
 
 /**
  * @brief Database connector class to handle MySQL operations
@@ -86,10 +87,16 @@ public:
     bool authenticateUser(const std::string& email, const std::string& password);
     
     /**
-     * @brief Load all counties from the database
+     * @brief Load counties from the database
      * @return Vector of Location objects
      */
     std::vector<Location> loadCounties();
+    
+    /**
+     * @brief Load users from the database
+     * @return Vector of User objects
+     */
+    std::vector<User> loadUsers();
     
     /**
      * @brief Load towns in a county from the database
@@ -111,7 +118,7 @@ public:
      * @param townId Town ID
      * @return Map of payment details
      */
-    std::map<std::string, std::string> getPaymentDetails(int houseId, int townId);
+    std::map<std::string, std::string> getPaymentDetails(const std::string& houseId, int townId);
     
     /**
      * @brief Search for houses based on criteria
@@ -127,13 +134,20 @@ public:
                                    int townId = -1);
                                    
     /**
+     * @brief Load bookings from the database for a specific user
+     * @param userId User ID to load bookings for, or -1 for all bookings
+     * @return Vector of Booking objects
+     */
+    std::vector<Booking> loadBookings(int userId = -1);
+    
+    /**
      * @brief Create a new booking in the database
      * @param userId User making the booking
      * @param houseId House being booked
      * @param townId Town where house is located
      * @return Booking ID if successful, -1 if failed
      */
-    int createBooking(int userId, int houseId, int townId);
+    int createBooking(int userId, const std::string& houseId, int townId);
     
     /**
      * @brief Record a payment in the database

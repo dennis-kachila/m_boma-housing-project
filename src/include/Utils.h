@@ -30,4 +30,12 @@ std::string hashPassword(const std::string& password);
  */
 bool verifyPassword(const std::string& password, const std::string& hashedPassword);
 
+/**
+ * @brief Compare two strings case-insensitively
+ * @param str1 First string
+ * @param str2 Second string
+ * @return true if strings match ignoring case
+ */
+bool equalsIgnoreCase(const std::string& str1, const std::string& str2);
+
 #endif // UTILS_H

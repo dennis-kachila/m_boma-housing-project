@@ -1,6 +1,7 @@
 #include "include/MBomaHousingSystem.h"
 #include "include/DBConnector.h"
 #include "include/DBConfig.h"
+#include "include/Utils.h"
 #include <iostream>
 #include <limits>
 #include <iomanip>
@@ -11,8 +12,12 @@ MBomaHousingSystem::MBomaHousingSystem() : currentUserId(0), dbConnector(nullptr
     if (dbConnector->connect(DBConfig::DB_HOST, DBConfig::DB_USER, DBConfig::DB_PASS, DBConfig::DB_NAME)) {
         useDatabase = true;
         std::cout << "Database connection established successfully.\n";
-        // In a production system, we would load data from the database
-        // For this implementation, we'll still use the sample data
+        
+        // Load users and bookings from database if connection is successful
+        if (useDatabase && dbConnector && dbConnector->isConnected()) {
+            users = dbConnector->loadUsers();
+            bookings = dbConnector->loadBookings(); // Load all bookings from database
+        }
     } else {
         std::cout << "Warning: Database connection failed. Using in-memory data.\n";
         std::cout << "Error: " << dbConnector->getLastError() << "\n";
@@ -57,30 +62,30 @@ void MBomaHousingSystem::initializeData() {
     locations.push_back(Location(401, "Bahati", "town", 4));
     
     // Add houses in Karen (Nairobi)
-    houses.push_back(House(1, "Bungalow", 100000, 50000, 101, "Karen Road, House #123", "https://maps.google.com/?q=Karen,Nairobi"));
-    houses.push_back(House(2, "Villa", 150000, 75000, 101, "Karen Drive, House #456", "https://maps.google.com/?q=Karen,Nairobi"));
+    houses.push_back(House("K001", "Bungalow", 100000, 50000, 101, "Karen Road, House #123", "https://maps.google.com/?q=Karen,Nairobi"));
+    houses.push_back(House("K002", "Villa", 150000, 75000, 101, "Karen Drive, House #456", "https://maps.google.com/?q=Karen,Nairobi"));
     
     // Add houses in Kitengela (Nairobi)
-    houses.push_back(House(3, "Apartment", 30000, 15000, 102, "Kitengela Plaza, Apt #10", "https://maps.google.com/?q=Kitengela,Nairobi"));
-    houses.push_back(House(4, "Studio", 20000, 10000, 102, "Kitengela Heights, Apt #5", "https://maps.google.com/?q=Kitengela,Nairobi"));
+    houses.push_back(House("KT01", "Apartment", 30000, 15000, 102, "Kitengela Plaza, Apt #10", "https://maps.google.com/?q=Kitengela,Nairobi"));
+    houses.push_back(House("KT02", "Studio", 20000, 10000, 102, "Kitengela Heights, Apt #5", "https://maps.google.com/?q=Kitengela,Nairobi"));
     
     // Add houses in Runda (Nairobi)
-    houses.push_back(House(5, "Mansion", 200000, 100000, 103, "Runda Estate, House #789", "https://maps.google.com/?q=Runda,Nairobi"));
+    houses.push_back(House("RD01", "Mansion", 200000, 100000, 103, "Runda Estate, House #789", "https://maps.google.com/?q=Runda,Nairobi"));
     
     // Add houses in Westlands (Nairobi)
-    houses.push_back(House(6, "Penthouse", 120000, 60000, 104, "Westlands Towers, Apt #20", "https://maps.google.com/?q=Westlands,Nairobi"));
+    houses.push_back(House("WL01", "Penthouse", 120000, 60000, 104, "Westlands Towers, Apt #20", "https://maps.google.com/?q=Westlands,Nairobi"));
     
     // Add houses in Nyali (Mombasa)
-    houses.push_back(House(7, "Beach House", 180000, 90000, 201, "Nyali Beach Road, House #101", "https://maps.google.com/?q=Nyali,Mombasa"));
+    houses.push_back(House("NY01", "Beach House", 180000, 90000, 201, "Nyali Beach Road, House #101", "https://maps.google.com/?q=Nyali,Mombasa"));
     
     // Add houses in Bamburi (Mombasa)
-    houses.push_back(House(8, "Cottage", 40000, 20000, 202, "Bamburi Beach, House #202", "https://maps.google.com/?q=Bamburi,Mombasa"));
+    houses.push_back(House("BM01", "Cottage", 40000, 20000, 202, "Bamburi Beach, House #202", "https://maps.google.com/?q=Bamburi,Mombasa"));
     
     // Add houses in Milimani (Kisumu)
-    houses.push_back(House(9, "Townhouse", 60000, 30000, 301, "Milimani Estate, House #303", "https://maps.google.com/?q=Milimani,Kisumu"));
+    houses.push_back(House("ML01", "Townhouse", 60000, 30000, 301, "Milimani Estate, House #303", "https://maps.google.com/?q=Milimani,Kisumu"));
     
     // Add houses in Bahati (Nakuru)
-    houses.push_back(House(10, "Duplex", 50000, 25000, 401, "Bahati Heights, House #404", "https://maps.google.com/?q=Bahati,Nakuru"));
+    houses.push_back(House("BH01", "Duplex", 50000, 25000, 401, "Bahati Heights, House #404", "https://maps.google.com/?q=Bahati,Nakuru"));
     
     // Add a test user
     users.push_back(User("Test User", "0712345678", "test@example.com", "password"));
@@ -174,7 +179,7 @@ void MBomaHousingSystem::displayHouses(int townId) {
     }
 }
 
-House* MBomaHousingSystem::findHouse(int houseId) {
+House* MBomaHousingSystem::findHouse(const std::string& houseId) {
     for (auto& house : houses) {
         if (house.getId() == houseId) {
             return &house;
@@ -407,7 +412,7 @@ void MBomaHousingSystem::displaySearchResults(const std::vector<House>& searchRe
         
         if (bookHouse == "y" || bookHouse == "Y") {
             std::cout << "Enter the House ID you want to book: ";
-            int houseId;
+            std::string houseId;
             std::cin >> houseId;
             std::cin.ignore(std::numeric_limits<std::streamsize>::max(), '\n');
             
@@ -435,7 +440,10 @@ void MBomaHousingSystem::displaySearchResults(const std::vector<House>& searchRe
                         // Update the booking ID to match the database-generated ID
                         bookings.pop_back();  // Remove original booking
                         booking.setId(dbBookingId);  // Update ID
-                        bookings.push_back(booking);  // Add updated booking
+                        
+                        // Reload all bookings to ensure we have the latest data with correct dates
+                        bookings = dbConnector->loadBookings();
+                        
                         bookingId = dbBookingId;  // Update bookingId for further use
                         std::cout << "Booking saved to database.\n";
                     } else {
@@ -523,6 +531,8 @@ void MBomaHousingSystem::run() {
                     std::getline(std::cin, password);
                     
                     bool loginSuccess = false;
+                    
+                    // First try authenticating with in-memory users
                     for (size_t i = 0; i < users.size(); ++i) {
                         if (users[i].login(email, password)) {
                             currentUserId = i + 1;
@@ -531,6 +541,29 @@ void MBomaHousingSystem::run() {
                             std::cout << "Login successful!\n";
                             waitForEnter();
                             break;
+                        }
+                    }
+                    
+                    // If in-memory login failed, try direct database authentication
+                    if (!loginSuccess && useDatabase && dbConnector && dbConnector->isConnected()) {
+                        if (dbConnector->authenticateUser(email, password)) {
+                            // Reload all users from database to ensure we have the latest data
+                            users = dbConnector->loadUsers();
+                            
+                            // Reload all bookings from the database
+                            bookings = dbConnector->loadBookings();
+                            
+                            // Find the user in the updated list
+                            for (size_t i = 0; i < users.size(); ++i) {
+                                if (equalsIgnoreCase(users[i].getEmail(), email)) {
+                                    currentUserId = i + 1;
+                                    isLoggedIn = true;
+                                    loginSuccess = true;
+                                    std::cout << "Login successful!\n";
+                                    waitForEnter();
+                                    break;
+                                }
+                            }
                         }
                     }
                     
@@ -619,11 +652,11 @@ void MBomaHousingSystem::run() {
                                                 std::cout << "\n0. Back to Towns\n";
                                                 std::cout << "Enter house ID to book (or 0 to go back): ";
                                                 
-                                                int houseId;
+                                                std::string houseId;
                                                 std::cin >> houseId;
                                                 std::cin.ignore(std::numeric_limits<std::streamsize>::max(), '\n');
                                                 
-                                                if (houseId == 0) {
+                                                if (houseId == "0") {
                                                     browsingHouses = false;
                                                 } else {
                                                     // Book the selected house

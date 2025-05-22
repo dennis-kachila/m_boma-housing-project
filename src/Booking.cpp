@@ -5,7 +5,7 @@
 #include <iomanip>
 #include <sstream>
 
-Booking::Booking(int id, int userId, int houseId)
+Booking::Booking(int id, int userId, const std::string& houseId)
     : id(id), userId(userId), houseId(houseId), isPaid(false) {
     
     bookingDate = getCurrentDateTime();
@@ -32,7 +32,7 @@ int Booking::getUserId() const {
     return userId;
 }
 
-int Booking::getHouseId() const {
+std::string Booking::getHouseId() const {
     return houseId;
 }
 
@@ -50,4 +50,12 @@ bool Booking::getPaymentStatus() const {
 
 void Booking::markAsPaid() {
     isPaid = true;
+}
+
+void Booking::setBookingDate(const std::string& date) {
+    bookingDate = date;
+}
+
+void Booking::setExpiryDate(const std::string& date) {
+    expiryDate = date;
 }

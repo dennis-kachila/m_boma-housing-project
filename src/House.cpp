@@ -1,12 +1,12 @@
 #include "include/House.h"
 
-House::House(int id, const std::string& type, double depositFee, double monthlyRent,
+House::House(const std::string& id, const std::string& type, double depositFee, double monthlyRent,
       int locationId, const std::string& address, const std::string& mapLink)
     : id(id), type(type), depositFee(depositFee), monthlyRent(monthlyRent),
       locationId(locationId), address(address), mapLink(mapLink),
       isAvailable(true), isBooked(false), bookedUntil("") {}
 
-int House::getId() const {
+std::string House::getId() const {
     return id;
 }
 

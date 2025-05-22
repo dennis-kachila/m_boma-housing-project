@@ -122,8 +122,8 @@ bool DBConnector::authenticateUser(const std::string& email, const std::string& 
     char* escapedEmail = new char[email.length() * 2 + 1];
     mysql_real_escape_string(conn, escapedEmail, email.c_str(), email.length());
     
-    // Create query with escaped email
-    std::string query = "SELECT password FROM user_info WHERE email = '" + std::string(escapedEmail) + "'";
+    // Create query with escaped email - using LOWER function for case-insensitive comparison
+    std::string query = "SELECT password FROM user_info WHERE LOWER(email) = LOWER('" + std::string(escapedEmail) + "')";
     
     // Free allocated memory
     delete[] escapedEmail;
@@ -228,7 +228,7 @@ std::vector<House> DBConnector::loadHouses(int townId) {
     
     MYSQL_ROW row;
     while ((row = mysql_fetch_row(result))) {
-        int id = std::stoi(row[0]);
+        std::string id = row[0];
         std::string type = row[1];
         double deposit = std::stod(row[2]);
         double rent = std::stod(row[3]);
@@ -244,12 +244,12 @@ std::vector<House> DBConnector::loadHouses(int townId) {
     return housesList;
 }
 
-std::map<std::string, std::string> DBConnector::getPaymentDetails(int houseId, int townId) {
+std::map<std::string, std::string> DBConnector::getPaymentDetails(const std::string& houseId, int townId) {
     std::map<std::string, std::string> details;
     
     std::string query = "SELECT bank_acount, m_pesa_till_no, owner_contacts "
                        "FROM payment_details "
-                       "WHERE house_id = " + std::to_string(houseId) + 
+                       "WHERE house_id = '" + houseId + "'" + 
                        " AND town_id = " + std::to_string(townId);
     
     if (!executeQuery(query)) {
@@ -325,7 +325,7 @@ std::vector<House> DBConnector::searchHouses(const std::string& type,
     // Extract houses from the result
     MYSQL_ROW row;
     while ((row = mysql_fetch_row(result))) {
-        int id = std::stoi(row[0]);
+        std::string id = row[0];
         std::string houseType = row[1];
         double deposit = std::stod(row[2]);
         double monthlyRent = std::stod(row[3]);
@@ -342,7 +342,58 @@ std::vector<House> DBConnector::searchHouses(const std::string& type,
     return results;
 }
 
-int DBConnector::createBooking(int userId, int houseId, int townId) {
+std::vector<Booking> DBConnector::loadBookings(int userId) {
+    std::vector<Booking> bookings;
+    
+    if (!isConnected()) {
+        setError("Not connected to database");
+        return bookings;
+    }
+    
+    std::string query = "SELECT booking_id, user_id, house_id, booking_date, expiry_date, is_paid FROM bookings";
+    
+    // If userId is provided, filter bookings for this user only
+    if (userId > 0) {
+        query += " WHERE user_id = " + std::to_string(userId);
+    }
+    
+    if (mysql_query(conn, query.c_str())) {
+        setError(mysql_error(conn));
+        return bookings;
+    }
+    
+    MYSQL_RES* result = mysql_store_result(conn);
+    if (!result) {
+        setError(mysql_error(conn));
+        return bookings;
+    }
+    
+    MYSQL_ROW row;
+    while ((row = mysql_fetch_row(result))) {
+        int bookingId = std::stoi(row[0]);
+        int userIdFromDb = std::stoi(row[1]);
+        std::string houseId = row[2];
+        
+        // Create booking object with core data
+        Booking booking(bookingId, userIdFromDb, houseId);
+        
+        // Set dates from database
+        if (row[3]) booking.setBookingDate(row[3]);
+        if (row[4]) booking.setExpiryDate(row[4]);
+        
+        // Set payment status if booking is paid
+        if (row[5] && std::string(row[5]) == "1") {
+            booking.markAsPaid();
+        }
+        
+        bookings.push_back(booking);
+    }
+    
+    mysql_free_result(result);
+    return bookings;
+}
+
+int DBConnector::createBooking(int userId, const std::string& houseId, int townId) {
     // Get the current date and expiry date
     std::string bookingDate = getCurrentDateTime();
     
@@ -357,8 +408,8 @@ int DBConnector::createBooking(int userId, int houseId, int townId) {
     
     // Create the booking query
     std::string query = "INSERT INTO bookings (user_id, house_id, town_id, booking_date, expiry_date, is_paid) "
-                        "VALUES (" + std::to_string(userId) + ", " + 
-                        std::to_string(houseId) + ", " + 
+                        "VALUES (" + std::to_string(userId) + ", '" + 
+                        houseId + "', " + 
                         std::to_string(townId) + ", '" + 
                         bookingDate + "', '" + 
                         expiryDate + "', 0)";
@@ -371,8 +422,8 @@ int DBConnector::createBooking(int userId, int houseId, int townId) {
     unsigned long bookingId = mysql_insert_id(conn);
     
     // Mark the house as booked
-    std::string updateHouseQuery = "UPDATE houses SET is_booked = 1 WHERE house_id = " + 
-                                  std::to_string(houseId) + " AND town_id = " + 
+    std::string updateHouseQuery = "UPDATE houses SET is_booked = 1 WHERE house_id = '" + 
+                                  houseId + "' AND town_id = " + 
                                   std::to_string(townId);
     executeQuery(updateHouseQuery);
     
@@ -412,4 +463,41 @@ std::string DBConnector::recordPayment(int bookingId, double amount, const std::
     executeQuery(updateBookingQuery);
     
     return receiptNumber;
+}
+
+std::vector<User> DBConnector::loadUsers() {
+    std::vector<User> users;
+    
+    std::string query = "SELECT user_id, first_name, phone_number, email, password FROM user_info";
+    
+    if (!executeQuery(query)) {
+        return users;
+    }
+    
+    MYSQL_RES* result = mysql_store_result(conn);
+    if (!result) {
+        std::cerr << "Failed to get result: " << mysql_error(conn) << std::endl;
+        return users;
+    }
+    
+    MYSQL_ROW row;
+    while ((row = mysql_fetch_row(result))) {
+        // Extract user data
+        // user_id is in row[0] but we don't need it currently
+        std::string name = row[1] ? row[1] : "";
+        std::string phone = row[2] ? row[2] : "";
+        std::string email = row[3] ? row[3] : "";
+        std::string hashedPassword = row[4] ? row[4] : "";
+        
+        // Create user with the existing hashed password (not re-hashing)
+        User user;
+        user.setName(name);
+        user.setPhone(phone);
+        user.setEmail(email);
+        user.setPasswordHash(hashedPassword); // Direct set of hashed password
+        users.push_back(user);
+    }
+    
+    mysql_free_result(result);
+    return users;
 }

@@ -2,6 +2,7 @@
 #define MBOMA_HOUSING_SYSTEM_H
 
 #include <vector>
+#include <string>
 #include <map>
 #include "User.h"
 #include "Location.h"
@@ -73,7 +74,7 @@ private:
      * @param houseId House ID to find
      * @return Pointer to house if found, nullptr otherwise
      */
-    House* findHouse(int houseId);
+    House* findHouse(const std::string& houseId);
     
     /**
      * @brief Get current logged-in user

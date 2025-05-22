@@ -8,7 +8,7 @@
  */
 class House {
 private:
-    int id;
+    std::string id;
     std::string type;        // e.g., "Apartment", "Bungalow", etc.
     double depositFee;
     double monthlyRent;
@@ -30,14 +30,14 @@ public:
      * @param address House address
      * @param mapLink Google Maps link
      */
-    House(int id, const std::string& type, double depositFee, double monthlyRent,
+    House(const std::string& id, const std::string& type, double depositFee, double monthlyRent,
           int locationId, const std::string& address, const std::string& mapLink);
     
     /**
      * @brief Get house ID
      * @return House ID
      */
-    int getId() const;
+    std::string getId() const;
     
     /**
      * @brief Get house type

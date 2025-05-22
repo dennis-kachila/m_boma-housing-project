@@ -18,11 +18,16 @@
 1. **Missing Header Includes**: Added required headers in DBConnector files:
    - Added `<map>`, `<sstream>`, and `<iomanip>` to DBConnector.cpp
    - Added `<map>` to DBConnector.h
-2. **Database Integration Fixes** (May 23, 2025):
-   - Added missing `setId` method to Booking class
-   - Fixed booking ID synchronization with database
-   - Ensured user registrations, bookings, and payments are saved correctly to database
-   - Improved error handling for database operations
+
+### Enhancements (May 22, 2025)
+1. **Unique House IDs**: Changed house IDs from integers to 4-character alphanumeric strings
+   - Modified database schema to use VARCHAR(4) for house_id instead of INT
+   - Updated House class to use string IDs instead of integers
+   - Modified Booking class to reference string house IDs
+   - Updated DBConnector class methods to handle string house IDs
+   - Changed primary key in houses table from composite (town_id, house_id) to just house_id
+   - Created sample data with unique 4-character house IDs (e.g., "RB01", "KA01", etc.)
+   - Fixed house browsing and booking functionality to work with string IDs
 
 ### Code Structure
 1. **Modular Architecture**: Fully implemented OOP principles with proper separation of concerns

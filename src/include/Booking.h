@@ -10,7 +10,7 @@ class Booking {
 private:
     int id;
     int userId;
-    int houseId;
+    std::string houseId;
     std::string bookingDate;
     std::string expiryDate;
     bool isPaid;
@@ -22,7 +22,7 @@ public:
      * @param userId User identifier
      * @param houseId House identifier
      */
-    Booking(int id, int userId, int houseId);
+    Booking(int id, int userId, const std::string& houseId);
     
     /**
      * @brief Get booking ID
@@ -46,7 +46,7 @@ public:
      * @brief Get house ID
      * @return House ID that is booked
      */
-    int getHouseId() const;
+    std::string getHouseId() const;
     
     /**
      * @brief Get booking date
@@ -55,10 +55,22 @@ public:
     std::string getBookingDate() const;
     
     /**
+     * @brief Set booking date
+     * @param date New booking date (typically from database)
+     */
+    void setBookingDate(const std::string& date);
+    
+    /**
      * @brief Get expiry date
      * @return Date when booking expires
      */
     std::string getExpiryDate() const;
+    
+    /**
+     * @brief Set expiry date
+     * @param date New expiry date (typically from database)
+     */
+    void setExpiryDate(const std::string& date);
     
     /**
      * @brief Get payment status

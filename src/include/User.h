@@ -78,6 +78,30 @@ public:
      * @return User's hashed password
      */
     std::string getPassword() const;
+    
+    /**
+     * @brief Set user's name
+     * @param name User's name
+     */
+    void setName(const std::string& name);
+    
+    /**
+     * @brief Set user's email
+     * @param email User's email address
+     */
+    void setEmail(const std::string& email);
+    
+    /**
+     * @brief Set user's phone number
+     * @param phone User's phone number
+     */
+    void setPhone(const std::string& phone);
+    
+    /**
+     * @brief Set user's password hash directly (without rehashing)
+     * @param hashedPassword Already hashed password
+     */
+    void setPasswordHash(const std::string& hashedPassword);
 };
 
 #endif // USER_H

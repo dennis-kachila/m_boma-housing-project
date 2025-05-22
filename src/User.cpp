@@ -46,7 +46,7 @@ bool User::registerUser() {
 }
 
 bool User::login(const std::string& inputEmail, const std::string& inputPassword) {
-    if (email == inputEmail && verifyPassword(inputPassword, password)) {
+    if (equalsIgnoreCase(email, inputEmail) && verifyPassword(inputPassword, password)) {
         isLoggedIn = true;
         return true;
     }
@@ -75,4 +75,20 @@ std::string User::getPassword() const {
 
 std::string User::getPhone() const {
     return phone;
+}
+
+void User::setName(const std::string& name) {
+    this->name = name;
+}
+
+void User::setEmail(const std::string& email) {
+    this->email = email;
+}
+
+void User::setPhone(const std::string& phone) {
+    this->phone = phone;
+}
+
+void User::setPasswordHash(const std::string& hashedPassword) {
+    this->password = hashedPassword;
 }
